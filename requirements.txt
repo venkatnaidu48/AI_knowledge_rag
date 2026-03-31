@@ -1,0 +1,81 @@
+# Core Dependencies
+langchain
+openai
+pydantic
+pydantic-settings
+python-dotenv
+
+# FastAPI & Web Framework
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Vector Database & Search
+faiss-cpu
+# faiss-gpu  # Uncomment for GPU support
+sentence-transformers
+scikit-learn
+
+# Document Processing
+pypdf
+python-docx
+openpyxl
+pdfplumber
+pytesseract  # For OCR
+
+# Database & ORM
+sqlalchemy
+psycopg2-binary
+alembic  # Database migrations
+
+# Authentication & Security
+pyjwt
+python-jose[cryptography]
+passlib[bcrypt]
+cryptography
+
+# Data Processing
+pandas
+numpy
+
+# Async & Background Tasks
+# asyncio is built-in, no need to install
+celery  # Optional: for background task queue
+redis   # Optional: cache & message broker
+
+# Monitoring & Logging
+python-json-logger
+prometheus-client
+sentry-sdk
+# python-logstash-formatter  # Removed - package doesn't exist on PyPI
+
+# Rate Limiting
+slowapi
+
+# Testing
+pytest
+pytest-asyncio
+pytest-cov
+pytest-benchmark
+pytest-html
+pytest-xdist
+pytest-timeout
+httpx
+faker  # For generating test data
+
+# Code Quality
+black
+flake8
+isort
+pylint==3.0.3
+mypy  # Static type checking
+
+# Security
+bandit  # Security issue scanner
+safety  # Dependency vulnerability scanner
+
+# Utilities
+requests==2.31.0
+aiohttp==3.9.1
+boto3==1.34.3  # AWS S3 support
+python-dateutil==2.8.2

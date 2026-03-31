@@ -1,0 +1,144 @@
+# Prometheus Alert Rules for RAG Application
+# Usage: Include in prometheus.yml as rule_files
+
+groups:
+  # Application health alerts
+  - name: app-health
+    interval: 30s
+    rules:
+      # Application is down or unreachable
+      - alert: ApplicationDown
+        expr: up{job="rag-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "RAG Application is down"
+          description: "Instance {{ $labels.instance }} is unreachable for more than 1 minute"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: |
+          (sum(rate(errors_total[5m])) / sum(rate(http_requests_total[5m]))) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+  # Performance alerts
+  - name: performance
+    interval: 30s
+    rules:
+      # High response time (p95)
+      - alert: HighResponseTime
+        expr: |
+          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time detected"
+          description: "p95 response time is {{ $value | humanizeDuration }} (threshold: 2s)"
+
+      # High retrieval time
+      - alert: SlowRetrieval
+        expr: |
+          histogram_quantile(0.95, rate(rag_retrieval_time_seconds_bucket[5m])) > 5.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow document retrieval"
+          description: "p95 retrieval time is {{ $value | humanizeDuration }} (threshold: 5s)"
+
+      # High generation time
+      - alert: SlowGeneration
+        expr: |
+          histogram_quantile(0.95, rate(rag_generation_time_seconds_bucket[5m])) > 10.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow LLM generation"
+          description: "p95 generation time is {{ $value | humanizeDuration }} (threshold: 10s)"
+
+  # RAG quality alerts
+  - name: rag-quality
+    interval: 60s
+    rules:
+      # High hallucination rate
+      - alert: HighHallucinationRate
+        expr: rag_hallucination_score > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High hallucination rate detected"
+          description: "Hallucination rate is {{ $value | humanizePercentage }} (threshold: 10%)"
+
+      # Low confidence score
+      - alert: LowConfidenceScore
+        expr: rag_confidence_score < 0.6
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low confidence in answers"
+          description: "Average confidence is {{ $value | humanizePercentage }} (threshold: 60%)"
+
+  # Database alerts
+  - name: database
+    interval: 30s
+    rules:
+      # High database connection pool usage
+      - alert: HighDatabaseConnections
+        expr: db_connections_total > 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database connection pool usage"
+          description: "Active connections: {{ $value }} (threshold: 15)"
+
+      # Slow database queries
+      - alert: SlowDatabaseQuery
+        expr: |
+          histogram_quantile(0.95, rate(db_query_duration_seconds_bucket[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow database queries detected"
+          description: "p95 query time is {{ $value | humanizeDuration }} (threshold: 1s)"
+
+  # Cache alerts
+  - name: cache
+    interval: 30s
+    rules:
+      # Low cache hit ratio
+      - alert: LowCacheHitRatio
+        expr: |
+          (sum(rate(cache_hits_total[5m])) / (sum(rate(cache_hits_total[5m])) + sum(rate(cache_misses_total[5m])))) < 0.5
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low cache hit ratio"
+          description: "Cache hit ratio is {{ $value | humanizePercentage }} (threshold: 50%)"
+
+  # Rate limit alerts
+  - name: rate-limiting
+    interval: 30s
+    rules:
+      # High rate limit rejections
+      - alert: HighRateLimitRejections
+        expr: |
+          (sum(rate(http_requests_total{status="429"}[5m])) / sum(rate(http_requests_total[5m]))) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit rejections"
+          description: "Rate limit rejection rate is {{ $value | humanizePercentage }} (threshold: 1%)"

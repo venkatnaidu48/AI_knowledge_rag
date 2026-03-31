@@ -1,0 +1,103 @@
+# ============ Python ============
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============ Virtual Environments ============
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+
+# ============ IDE & Editors ============
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.env.local
+.env.*.local
+
+# ============ Testing & Coverage ============
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ============ Environment & Config ============
+.env
+*.pem
+*.key
+*.crt
+
+# ============ Database & Cache ============
+rag_dev.db
+*.db
+*.sqlite
+*.sqlite3
+.cache/
+
+# ============ Logs ============
+logs/
+*.log
+
+# ============ Temporary Files ============
+tmp/
+temp/
+*.tmp
+.tmp/
+
+# ============ OS Files ============
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ============ Docker ============
+docker-compose.override.yml
+.docker/
+
+# ============ Node (if using frontend) ============
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ============ Keep important files ============
+!logs/.gitkeep
+!data/.gitkeep
+!backups/.gitkeep
+!monitoring/.gitkeep
+
+data/vector_index/
+*.pkl
+*.index
+
+data/
+*.pkl
+*.index

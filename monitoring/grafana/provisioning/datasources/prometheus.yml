@@ -1,0 +1,25 @@
+# Grafana data sources provisioning configuration
+# Place in: monitoring/grafana/provisioning/datasources/prometheus.yml
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    basicAuth: false
+    isDefault: true
+    editable: true
+    version: 1
+    
+  - name: Elasticsearch
+    type: elasticsearch
+    url: http://elasticsearch:9200
+    access: proxy
+    basicAuth: false
+    elasticsearchVersion: 8.0.0
+    esVersion: 8
+    timeField: '@timestamp'
+    database: 'logs-*'
+    version: 1

@@ -1,0 +1,63 @@
+# Prometheus configuration for RAG Application
+# Usage: prometheus --config.file=monitoring/prometheus.yml
+
+global:
+  scrape_interval: 15s       # Default scrape interval
+  evaluation_interval: 15s   # Default evaluation interval
+  external_labels:
+    monitor: 'rag-app-prod'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "monitoring/alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # RAG Application metrics
+  - job_name: 'rag-app'
+    static_configs:
+      - targets: ['localhost:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    
+  # PostgreSQL (if using JSON exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['localhost:5432']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:6379']
+    scrape_interval: 30s
+
+  # Docker metrics (if using cAdvisor)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['localhost:8080']
+    scrape_interval: 30s
+
+# Remote storage configuration (optional - for long-term storage)
+# remote_write:
+#   - url: "http://remote-prometheus:9009/api/v1/write"
+#     queue_config:
+#       capacity: 100000
+#       max_shards: 200
+#       max_samples_per_send: 10000
+#       batch_send_wait: 5s
+#       min_back_off: 30ms
+#       max_back_off: 100ms
