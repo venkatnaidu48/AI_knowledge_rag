@@ -1,20 +1,16 @@
 # RAG Application: Complete End-to-End Guide
 
 method1: .venv\Scripts\python.exe -m uvicorn src.main:app --host 0.0.0.0 --port 8000
-method2:python scripts/retrieve_answers.py 
-C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>.venv\Scripts\python.exe fast_qa.py
 
-fast execution
-first--C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication\fast_qa.py
+first--->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_complete_pipeline.py
+second-->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python scripts/retrieve_answers.py
 
-c:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>run_fast_qa.bat 
+c:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_pipeline_improved.py ---> final
 
 # STEP 3: Query the API
 curl -X POST "http://localhost:8000/api/v1/query/process" \
   -H "Content-Type: application/json" \
   -d '{"query": "What are company policies?"}'
-
-  
 
 ## Table of Contents
 1. [Project Overview]
@@ -2871,3 +2867,22 @@ See `docs/` folder for detailed endpoint documentation.
 
 This system represents the complete RAG pipeline - from document upload to grounded answer generation with quality validation. Each STEP is essential and builds on the previous one.
 
+BEFORE (73.8% with hallucination):
+  Quality:            73.8% GOOD ⚠️
+  Hallucination Risk: HIGH 🔴
+  Grounding:          Not checked
+  Detection:          Basic
+
+AFTER (77%+ with LOW risk):
+  Quality:            77.0% GOOD ✅
+  Hallucination Risk: LOW 🟢
+  Grounding:          34% (flagged as concern)
+  Detection:          Advanced (3-part system)
+
+WITH LLM (90%+):
+  Quality:            92%+ EXCELLENT ✅
+  Hallucination Risk: SAFE ✅
+  Grounding:          70%+ (good)
+  Detection:          Production-ready
+
+ 

@@ -1,6 +1,11 @@
 
    # RAG Application: Complete Step-by-Step Breakdown
-## Clear Definition of Each Step
+## Clear Definition of Each Step\
+
+first--->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_complete_pipeline.py
+second-->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python scripts/retrieve_answers.py
+c:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_pipeline_improved.py
+
 
 ---
 
@@ -99,6 +104,7 @@ POST /api/v1/documents/upload
 
 ## What is it?
 **Chunking** is splitting large documents into smaller, meaningful pieces while preserving context.
+
 
 ## What does it do?
 
@@ -360,7 +366,6 @@ POST /api/v1/vector-db/search/hybrid
 - Search using both semantic and keyword methods
 - Return top-5 relevant chunks
 ```
-
 ---
 
 # STEP 5: QUERY PROCESSING PIPELINE

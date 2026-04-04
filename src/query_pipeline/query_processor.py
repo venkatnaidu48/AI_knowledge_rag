@@ -271,14 +271,12 @@ class QueryProcessor:
     ) -> Dict:
         """
         Process query restricted to department's documents.
-        
         Args:
             query: User question
             department: Department name
             db: Database session
             k: Top-k results
             score_threshold: Minimum similarity
-        
         Returns:
             Query response limited to department
         """
