@@ -10,6 +10,9 @@ fastapi
 uvicorn[standard]
 python-multipart
 
+# Tokenizers (for OpenAI)
+tiktoken
+
 # Vector Database & Search
 faiss-cpu
 # faiss-gpu  # Uncomment for GPU support

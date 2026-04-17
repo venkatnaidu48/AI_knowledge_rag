@@ -1,17 +1,15 @@
-version: '3.8'
-
 services:
   # FastAPI Application
   app:
     build: .
     container_name: rag-app
     ports:
-      - "8000:8000"
+      - "3001:3000"
     environment:
       - DEBUG=true
       - ENVIRONMENT=production
-      - APP_HOST=0.0.0.0
-      - APP_PORT=8000
+      - API_HOST=0.0.0.0
+      - API_PORT=3000
       - DATABASE_URL=sqlite:////app/data/rag_dev.db
       - FAISS_INDEX_PATH=/app/data/vector_index/faiss.index
       - FAISS_METADATA_PATH=/app/data/vector_index/faiss_metadata.pkl
@@ -25,7 +23,7 @@ services:
     networks:
       - rag-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -53,11 +51,11 @@ services:
     container_name: rag-frontend
     working_dir: /app
     ports:
-      - "3000:3000"
+      - "3003:3000"
     volumes:
       - ./frontend:/app
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_API_URL=http://localhost:3001
     command: npm start
     depends_on:
       - app

@@ -1,9 +1,7 @@
 # RAG Application - Interview Preparation (60 Questions)
 
 **Project:** Enterprise RAG System | Status: 95% Complete | 102 Documents | 38,912 Chunks
-
 ---
-
 ## Section 1: Project Overview & Fundamentals (Q1-Q8)
 
 ### Q1: What is the RAG application project and what problem does it solve?
@@ -56,7 +54,7 @@ When a document is uploaded, the system immediately validates its format (PDF, D
 
 ### Q12: How does the system handle different document types?
 
-Each document type has a dedicated parser optimized for that format. **PDF documents** are parsed page-by-page; the system extracts text while preserving formatting cues like headers and page numbers. For scanned PDFs (images), the system can apply OCR to extract readable text. **DOCX (Word) documents** are processed paragraph-by-paragraph, preserving heading hierarchy (H1, H2, H3) which helps the system understand document structure. **XLSX (Excel) spreadsheets** are converted to readable text with sheet names, column headers, and rows formatted as structured text (e.g., "Department: HR, Headcount: 50"). **TXT files** are read directly with automatic encoding detection. After extraction, all documents go through a normalization step: removing extra whitespace, standardizing line breaks, and cleaning encoding artifacts. This ensures consistent processing regardless of source format.
+Each document type has a dedicated parser optimized for that format. **PDF documents** are parsed page-by-page; the system extracts text while preserving formatting cues like headers and page numbers. For scanned PDFs (images), the system can apply OCR to extract readable text. **DOCX (Word) documents** are processed paragraph-by-paragraph, preserving heading hierarchy (H1, H2, H3) which helps the system understand document structure. **XLSX (Excel) spreadsheets** are converted to readable text with sheet names, column headers, and rows formatted as structured text (e.g., "Department: HR, Headcount: 50"). **TXT files** are read directly with automatic encoding detection. After extraction, all documents go through a normalization step: removing extra whitespace, standardizing line breaks, and cleaning s artifacts. This ensures consistent processing regardless of source format.
 
 ### Q13: What is the database schema and why is it designed this way?
 
@@ -121,7 +119,6 @@ When similarity search returns chunks with very low relevance scores (similarity
 ### Q27: How does the system handle sensitive or confidential information?
 
 Confidential documents are only searchable by their owner or admins. When a user performs a search, the FAISS index returns potentially relevant chunks, but the system immediately filters results: checking each chunk's parent document sensitivity level and comparing against the user's permissions. If the user can't access the document, that chunk is removed from results. Search latency increases slightly (few milliseconds) due to permission checking, but remains well under 100ms. This two-stage approach (retrieve semantically relevant, then permission-filter) ensures security without compromising search quality. For documents with mixed sensitivity (some sections public, others confidential), the system can apply per-section tags and enforce permission at that granularity. Queries are logged with the user and timestamp, enabling audit trails for compliance teams to verify who accessed what information when.
-
 ### Q28: How are different LLM providers integrated?
 
 The system uses a provider factory pattern: an abstract LLMProvider base class defines the interface, while specific implementations (MistralProvider, OpenAIProvider, ClaudeProvider) inherit from it. Each provider handles its own API calls, error handling, and response formatting. At runtime, the system selects a provider based on configuration: Mistral-7B is default (runs locally, no API calls, no cost), but if OPENAI_API_KEY is configured, users can opt into GPT-4 for complex queries. Each query specifies which model to use or falls back to default. This modularity means switching models involves changing one configuration—no code changes. Each model has different strengths: Mistral is fast and cost-effective, GPT-4 is more precise, Claude-2 excels at long-form reasoning. Users can now leverage the best model for each use case.
@@ -204,7 +201,7 @@ Several metrics signal hallucination problems: **Hallucination Rate** (manual re
 
 ### Q46: How are positive and negative examples collected for continuous improvement?
 
-The system maintains dataset of positive examples (user rated 4-5 stars, marked accurate) and negative examples (user flagged hallucination, rated 1-2 stars). These aren't used to retrain the LLM (which would require access to model weights), but rather to fine-tune it. Fine-tuning (via LoRA, Low-Rank Adaptation) adds a small trainable layer on top of the frozen base model. This layer learns to recognize good response patterns from your company's specific query distribution. After ~100 positive examples per week accumulate, the system performs one night's fine-tuning job. The fine-tuned model is then tested: the system doesn't automatically switch to it; instead it's validated against held-out examples. If the fine-tuned model produces better results than the base model on validation data, it's deployed as the new default.
+The system maintains dataset of positive examples (user rated 4-5 stars, marked accurate) and negative examples (user flagged hallucination, rated 1-2 stars). These aren't used to retrain the LLM (which would require access to model weights), but rather to fine-tune it. Fine-tuning (via LoRA, Low-Rank Adaptation) adds a small trainable layer on top of the frozen base model. This layer learns to recognize good response patterns from your company's specific query distribution. After ~100 positive examples per week accumulate, the system performs one night's fine-tuning job. The fine-tuned model is then tested: the system doesn't automatically switch to it; instead it's validated against held-out examples. If he fine-tuned model produces better results than the base model on validation data, it's deployed as the new default.
 
 ### Q47: What happens when user feedback contradicts system confidence?
 

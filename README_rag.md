@@ -2,8 +2,15 @@
 
 method1: .venv\Scripts\python.exe -m uvicorn src.main:app --host 0.0.0.0 --port 8000
 
-first--->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_complete_pipeline.py
+first--->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_pipeline_improved.py
 second-->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python scripts/retrieve_answers.py
+
+Try asking questions like:
+
+"What products does the company offer?"
+"Who are the employees?"
+"What contracts do we have?"
+"What is the company culture?"
 
 c:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_pipeline_improved.py ---> final
 

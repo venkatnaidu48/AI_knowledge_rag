@@ -2,35 +2,61 @@
 """Test advanced Q&A system"""
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
 import logging
 logging.disable(logging.CRITICAL)
 
-from qa_advanced_full import AdvancedQASystem
+import pytest
+from src.qa_advanced_full import AdvancedQASystem
 
-system = AdvancedQASystem()
 
-print("\n" + "="*80)
-print("ADVANCED Q&A SYSTEM - FULL KNOWLEDGE BASE TEST")
-print("="*80 + "\n")
+@pytest.fixture(scope="module")
+def qa_system():
+    """Initialize Q&A system for testing"""
+    system = AdvancedQASystem()
+    yield system
+    system.close()
 
-#Test cases
-tests = [
-    ("production 2024", 0.5, "Annual Report"),
-    ("net zero emission 2039", 0.5, "Sustainability"),
-    ("IIMA policies", 0.6, "HR Policy"),
-    ("stock price Apple", 0.8, "Unrelated"),
-]
 
-for question, threshold, description in tests:
-    print(f"[{description}] Threshold: {int(threshold*100)}%")
-    print(f"Q: {question}")
-    answer = system.get_answer(question, threshold=threshold)
-    
-    # Show first 200 chars
-    preview = answer.replace('\n', ' ')[:200]
-    print(f"A: {preview}...\n")
+@pytest.mark.unit
+def test_advanced_qa_production_2024(qa_system):
+    """Test Q&A with production 2024 question"""
+    question = "production 2024"
+    threshold = 0.5
+    answer = qa_system.get_answer(question, threshold=threshold)
+    assert answer is not None
+    assert len(answer) > 0
+    assert isinstance(answer, str)
 
-system.close()
-print("="*80)
+
+@pytest.mark.unit
+def test_advanced_qa_net_zero_emission(qa_system):
+    """Test Q&A with net zero emission question"""
+    question = "net zero emission 2039"
+    threshold = 0.5
+    answer = qa_system.get_answer(question, threshold=threshold)
+    assert answer is not None
+    assert len(answer) > 0
+    assert isinstance(answer, str)
+
+
+@pytest.mark.unit
+def test_advanced_qa_iima_policies(qa_system):
+    """Test Q&A with IIMA policies question"""
+    question = "IIMA policies"
+    threshold = 0.6
+    answer = qa_system.get_answer(question, threshold=threshold)
+    assert answer is not None
+    assert len(answer) > 0
+    assert isinstance(answer, str)
+
+
+@pytest.mark.unit
+def test_advanced_qa_unrelated_query(qa_system):
+    """Test Q&A with unrelated question"""
+    question = "stock price Apple"
+    threshold = 0.8
+    answer = qa_system.get_answer(question, threshold=threshold)
+    assert answer is not None
+    assert isinstance(answer, str)

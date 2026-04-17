@@ -9,7 +9,6 @@ from typing import Optional, Dict, List
 import hashlib
 
 # Text extraction libraries
-import PyPDF2
 import pdfplumber
 from docx import Document as DocxDocument
 import openpyxl

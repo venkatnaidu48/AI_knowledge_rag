@@ -2,35 +2,57 @@
 """Quick test of complete RAG pipeline"""
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
 import logging
 logging.disable(logging.CRITICAL)
 
-from rag_complete_pipeline import RAGPipeline
+import pytest
+from src.rag_pipeline_improved import ImprovedRAGPipeline
 
-pipeline = RAGPipeline(verbose=False)
 
-tests = [
-    "production 2024",
-    "net zero emission 2039",
-    "IIMA policies",
-    "pizza recipe",
-]
+@pytest.fixture(scope="module")
+def rag_pipeline():
+    """Initialize RAG pipeline for testing"""
+    pipeline = ImprovedRAGPipeline(verbose=False)
+    yield pipeline
+    pipeline.close()
 
-print("\n" + "="*90)
-print("COMPLETE RAG PIPELINE TEST (Steps 5-7)")
-print("="*90)
 
-for q in tests:
-    print(f"\n[Query] {q}")
-    response = pipeline.process_query(q)
-    print(f"[Found] {response.source_documents if response.source_documents else 'NOT FOUND'}")
-    print(f"[Score] {response.validation_score:.1%} - {response.quality_level}")
-    if response.hallucination_detected:
-        print(f"[Alert] ⚠️ Hallucination Risk")
-    preview = response.answer.replace('\n', ' ')[:100]
-    print(f"[Reply] {preview}...")
+@pytest.mark.unit
+def test_rag_pipeline_production_2024(rag_pipeline):
+    """Test RAG pipeline with production 2024 query"""
+    query = "production 2024"
+    response = rag_pipeline.process_query(query)
+    assert response is not None
+    assert response.answer is not None
+    assert len(response.answer) > 0
 
-pipeline.close()
-print("\n" + "="*90)
+
+@pytest.mark.unit
+def test_rag_pipeline_net_zero_emission(rag_pipeline):
+    """Test RAG pipeline with net zero emission query"""
+    query = "net zero emission 2039"
+    response = rag_pipeline.process_query(query)
+    assert response is not None
+    assert response.answer is not None
+    assert len(response.answer) > 0
+
+
+@pytest.mark.unit
+def test_rag_pipeline_iima_policies(rag_pipeline):
+    """Test RAG pipeline with IIMA policies query"""
+    query = "IIMA policies"
+    response = rag_pipeline.process_query(query)
+    assert response is not None
+    assert response.answer is not None
+    assert len(response.answer) > 0
+
+
+@pytest.mark.unit
+def test_rag_pipeline_unrelated_query(rag_pipeline):
+    """Test RAG pipeline with unrelated query"""
+    query = "pizza recipe"
+    response = rag_pipeline.process_query(query)
+    assert response is not None
+    assert response.answer is not None
