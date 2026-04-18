@@ -148,16 +148,16 @@ async def root():
 
 # Import and include routers here as we build them:
 from src.api.routes.documents import router as documents_router
-from src.api.routes.embeddings import router as embeddings_router
+# from src.api.routes.embeddings import router as embeddings_router  # Temporarily disabled - TensorFlow compatibility issue
 from src.api.routes.search import router as search_router
-from src.api.routes.query import router as query_router
+# from src.api.routes.query import router as query_router  # Temporarily disabled - depends on embeddings
 from src.api.routes.generation import router as generation_router
 from src.api.routes.validation import router as validation_router
 
 app.include_router(documents_router)
-app.include_router(embeddings_router)
+# app.include_router(embeddings_router)
 app.include_router(search_router)
-app.include_router(query_router)
+# app.include_router(query_router)
 app.include_router(generation_router)
 app.include_router(validation_router)
 

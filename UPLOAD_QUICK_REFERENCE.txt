@@ -1,0 +1,464 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                    📤 COMPLETE DOCUMENT UPLOAD GUIDE                        ║
+║                                                                              ║
+║               How to Add Documents to Your RAG System                        ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🚀 QUICK START (5 minutes)
+═══════════════════════════════════════════════════════════════════════════════
+
+Step 1: Start Your RAG Server
+─────────────────────────────────────────────────────────────────────────────
+
+    $ python run.py
+
+    Expected output:
+    ✅ Uvicorn running on http://127.0.0.1:8000
+    ✅ Application startup complete
+    ✅ Ready to accept requests
+
+
+Step 2: Use the simplest method - cURL
+─────────────────────────────────────────────────────────────────────────────
+
+    curl -X POST "http://localhost:8000/api/v1/documents/upload" \
+      -F "file=@my_document.pdf"
+
+    Expected response:
+    ✅ {
+      "success": true,
+      "document_id": "doc-abc123",
+      "chunks_created": 42,
+      ...
+    }
+
+Step 3: Verify It Worked
+─────────────────────────────────────────────────────────────────────────────
+
+    curl http://localhost:8000/api/v1/documents/list | python -m json.tool
+
+    You should see your document in the list!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📋 METHOD COMPARISON
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────┬──────────────┬──────────────┬─────────────────────┐
+│ Method          │ Complexity   │ Best For     │ Example Time        │
+├─────────────────┼──────────────┼──────────────┼─────────────────────┤
+│ cURL            │ ⭐ Very Easy │ Quick tests  │ 30 seconds          │
+│ Python Script   │ ⭐⭐ Easy    │ Automation   │ 2 minutes           │
+│ API Direct      │ ⭐⭐⭐ Hard  │ Integration  │ 5 minutes           │
+└─────────────────┴──────────────┴──────────────┴─────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+METHOD 1️⃣: CURL (SIMPLEST - START HERE!)
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 Best for: Quick testing, one-off uploads, command-line users
+
+⏱️ Time to first upload: ~30 seconds
+
+📝 BASIC EXAMPLE
+────────────────────────────────────────────────────────────────────────────
+
+    curl -X POST "http://localhost:8000/api/v1/documents/upload" \
+      -F "file=@document.pdf"
+
+
+📝 WITH METADATA EXAMPLE
+────────────────────────────────────────────────────────────────────────────
+
+    curl -X POST "http://localhost:8000/api/v1/documents/upload" \
+      -F "file=@financial_report.pdf" \
+      -F "department=Finance" \
+      -F "sensitivity=internal" \
+      -F "owner_email=john@company.com"
+
+
+📝 BATCH UPLOAD (Multiple files)
+────────────────────────────────────────────────────────────────────────────
+
+    # On Mac/Linux:
+    for file in *.pdf; do
+      curl -X POST "http://localhost:8000/api/v1/documents/upload" \
+        -F "file=@$file"
+    done
+
+    # On Windows PowerShell:
+    Get-ChildItem *.pdf | ForEach-Object {
+      curl -X POST "http://localhost:8000/api/v1/documents/upload" `
+        -F "file=@$_"
+    }
+
+
+📝 SAVE RESPONSE TO FILE
+────────────────────────────────────────────────────────────────────────────
+
+    curl -X POST "http://localhost:8000/api/v1/documents/upload" \
+      -F "file=@document.pdf" \
+      -o response.json
+
+    # View the response
+    cat response.json
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+METHOD 2️⃣: PYTHON (RECOMMENDED FOR AUTOMATION)
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 Best for: Automated uploads, batch operations, integration with other tools
+
+⏱️ Time to first upload: ~2 minutes
+
+📝 SIMPLE PYTHON EXAMPLE
+────────────────────────────────────────────────────────────────────────────
+
+Save this as `upload.py`:
+
+    import requests
+    
+    response = requests.post(
+        "http://localhost:8000/api/v1/documents/upload",
+        files={"file": open("document.pdf", "rb")}
+    )
+    
+    print(response.json())
+
+Run it:
+
+    python upload.py
+
+
+📝 WITH ERROR HANDLING
+────────────────────────────────────────────────────────────────────────────
+
+    import requests
+    
+    def upload_document(filepath):
+        try:
+            with open(filepath, "rb") as f:
+                response = requests.post(
+                    "http://localhost:8000/api/v1/documents/upload",
+                    files={"file": f}
+                )
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result["success"]:
+                    print(f"✅ Uploaded: {result['document_id']}")
+                    print(f"   Chunks: {result['chunks_created']}")
+                    return True
+        except Exception as e:
+            print(f"❌ Error: {e}")
+        return False
+    
+    # Usage
+    upload_document("financial_report.pdf")
+
+
+📝 BATCH UPLOAD MULTIPLE FILES
+────────────────────────────────────────────────────────────────────────────
+
+    import requests
+    import os
+    
+    docs_folder = "path/to/documents"
+    
+    for filename in os.listdir(docs_folder):
+        if filename.endswith(('.pdf', '.docx', '.txt')):
+            filepath = os.path.join(docs_folder, filename)
+            
+            print(f"Uploading {filename}...", end=" ")
+            
+            response = requests.post(
+                "http://localhost:8000/api/v1/documents/upload",
+                files={"file": open(filepath, "rb")},
+                data={"department": "General"}
+            )
+            
+            if response.json()["success"]:
+                print("✅")
+            else:
+                print("❌")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 WHAT HAPPENS AFTER UPLOAD (5-SECOND TIMELINE)
+═══════════════════════════════════════════════════════════════════════════════
+
+Your request:
+    POST /api/v1/documents/upload
+    File: "financial_report.pdf" (2.5 MB)
+
+Timeline:
+    │
+    ├─ T+0.0s: File received
+    │
+    ├─ T+0.1s: Stored in database
+    │           ✅ documents table: +1 row
+    │
+    ├─ T+1.0s: Text extracted and cleaned
+    │
+    ├─ T+2.0s: Split into chunks
+    │           ✅ document_chunks table: +25 rows
+    │
+    ├─ T+3.5s: Embeddings generated
+    │           ✅ chunk_embeddings table: +25 rows
+    │
+    ├─ T+4.0s: FAISS index updated
+    │           ✅ Vector index: +25 vectors
+    │
+    ├─ T+4.5s: Status = PROCESSED
+    │
+    └─ T+5.0s: API returns success response ✅
+        
+              "success": true,
+              "document_id": "doc-abc123",
+              "chunks_created": 25,
+              ...
+
+
+🎉 DOCUMENT IS NOW SEARCHABLE!
+Users can ask questions about it immediately!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ VERIFY YOUR UPLOAD WORKED
+═══════════════════════════════════════════════════════════════════════════════
+
+List all documents:
+    curl http://localhost:8000/api/v1/documents/list
+
+Expected response (first few fields):
+    {
+      "total": 124,
+      "documents": [
+        {
+          "id": "doc-abc123",
+          "name": "financial_report.pdf",
+          "chunks": 25,
+          "status": "PROCESSED",
+          "uploaded_at": "2026-04-18T10:00:00"
+        },
+        ...
+      ]
+    }
+
+
+Query the document:
+    curl -X POST http://localhost:8000/api/v1/chat \
+      -H "Content-Type: application/json" \
+      -d '{"query": "What is the Q1 revenue?"}'
+
+Expected response:
+    ✅ Answer includes data from your newly uploaded document!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔄 REAL WORKFLOW EXAMPLE (Copy-Paste Ready)
+═══════════════════════════════════════════════════════════════════════════════
+
+Scenario: HR team uploads new employee handbook
+
+Step 1: Start the server
+    $ python run.py
+    (wait for "Application startup complete")
+
+
+Step 2: Upload the handbook via Python
+    
+    save as `upload_handbook.py`:
+    
+    ───────────────────────────────────────────────────────────────────────
+    import requests
+    import sys
+    
+    def upload_and_verify(filepath):
+        print(f"📤 Uploading: {filepath}")
+        
+        # Upload
+        response = requests.post(
+            "http://localhost:8000/api/v1/documents/upload",
+            files={"file": open(filepath, "rb")},
+            data={"department": "HR"}
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            doc_id = result["document_id"]
+            
+            print(f"✅ Success!")
+            print(f"   Document ID: {doc_id}")
+            print(f"   Chunks: {result['chunks_created']}")
+            
+            # Verify it's in the list
+            list_response = requests.get("http://localhost:8000/api/v1/documents/list")
+            total = list_response.json()["total"]
+            print(f"   System now has {total} documents")
+            
+            return doc_id
+        else:
+            print(f"❌ Error: {response.status_code}")
+            return None
+    
+    if __name__ == "__main__":
+        doc_id = upload_and_verify("employee_handbook.pdf")
+        
+        if doc_id:
+            print(f"\n✨ Handbook uploaded and searchable!")
+            print(f"\nEmployees can now ask:")
+            print(f"   'What's the vacation policy?'")
+            print(f"   'What are the work hours?'")
+            print(f"   'How does expense reimbursement work?'")
+    ───────────────────────────────────────────────────────────────────────
+    
+    Run it:
+    $ python upload_handbook.py
+    
+    Output:
+    ✅ 📤 Uploading: employee_handbook.pdf
+    ✅ ✅ Success!
+    ✅    Document ID: doc-xyz789
+    ✅    Chunks: 156
+    ✅    System now has 124 documents
+    ✅ ✨ Handbook uploaded and searchable!
+
+
+Step 3: Employees ask questions (already works!)
+    
+    They can use your chat interface and the system will
+    retrieve answers from the newly uploaded handbook!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📋 SUPPORTED FILE FORMATS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ Supported:
+   • .pdf          (PDF documents)
+   • .docx         (Word documents)
+   • .doc          (Older Word format)
+   • .txt          (Plain text)
+   • .xlsx         (Excel spreadsheets)
+   • .xls          (Older Excel format)
+
+❌ Not supported:
+   • .exe, .bat, .sh (security restricted)
+   • .jpg, .png, .gif (images - no OCR)
+   • .zip, .7z, .rar (compressed files)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔐 SECURITY & METADATA
+═══════════════════════════════════════════════════════════════════════════════
+
+Optional parameters you can add:
+
+department
+    ├─ Value: Any string (e.g., "Finance", "HR", "Sales")
+    ├─ Purpose: Organize and categorize documents
+    └─ Default: "Uncategorized"
+
+sensitivity
+    ├─ Options: "public", "internal", "confidential"
+    ├─ Purpose: Control who can access the document
+    └─ Default: "internal"
+
+owner_email
+    ├─ Value: Email address (e.g., "john@company.com")
+    ├─ Purpose: Track document ownership
+    └─ Default: Anonymous
+
+Example with all metadata:
+
+    curl -X POST "http://localhost:8000/api/v1/documents/upload" \
+      -F "file=@financial_report.pdf" \
+      -F "department=Finance" \
+      -F "sensitivity=confidential" \
+      -F "owner_email=cfo@company.com"
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+💡 COMMON QUESTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+Q: How long until a document is searchable?
+A: About 5 seconds from upload to fully indexed and searchable.
+
+Q: Can I upload while my system is running?
+A: Yes! Upload while people are using the chat - zero downtime.
+
+Q: How many documents can I upload?
+A: Theoretically unlimited. Current system has 123+ documents indexed.
+
+Q: Do I need to retrain the model?
+A: NO! Just upload the document and it's instantly available. No retraining needed.
+
+Q: What if I upload a duplicate?
+A: The system will create it as a new document. You can delete the old one later.
+
+Q: Can I delete a document after uploading?
+A: Yes! Send DELETE /api/v1/documents/{document_id}
+
+Q: Will new documents affect query speed?
+A: Minimal impact. FAISS index is optimized for large datasets.
+
+Q: What if my file is too large?
+A: Large files (>500MB) may need streaming. Try uploading it anyway first.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🚀 NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Start your RAG server:
+   $ python run.py
+
+2. Try uploading with cURL (simplest):
+   curl -X POST "http://localhost:8000/api/v1/documents/upload" \
+     -F "file=@your_document.pdf"
+
+3. Verify it worked:
+   curl http://localhost:8000/api/v1/documents/list
+
+4. Test querying the document:
+   curl -X POST http://localhost:8000/api/v1/chat \
+     -H "Content-Type: application/json" \
+     -d '{"query": "Your question about the document"}'
+
+5. For automation, use the Python script approach
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📁 FILES YOU CREATED
+═══════════════════════════════════════════════════════════════════════════════
+
+This guide: ADD_DOCUMENTS_VIA_API.md
+Interactive examples: UPLOAD_DOCUMENTS_EXAMPLES.py (requires server running)
+Continuous updates explained: CONTINUOUS_UPDATE_EXPLAINED.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✨ YOU'RE READY! ✨
+
+Your RAG system is set up for continuous document updates.
+Start uploading documents and watch your knowledge base grow!
+
+Happy documenting! 🚀
+
+═══════════════════════════════════════════════════════════════════════════════

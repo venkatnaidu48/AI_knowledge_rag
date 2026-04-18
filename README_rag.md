@@ -1,5 +1,15 @@
 # RAG Application: Complete End-to-End Guide
 
+# Option 1: Run the pipeline
+cd src && python rag_pipeline_improved.py
+
+# Option 2: Start API server
+python src/main.py
+# Access at: http://localhost:8000/docs
+
+# Option 3: Deploy with Docker
+docker-compose -f deployment/docker-compose.yml up -d
+
 method1: .venv\Scripts\python.exe -m uvicorn src.main:app --host 0.0.0.0 --port 8000
 
 first--->(.venv) C:\Users\VENKATADRI\Downloads\Desktop\codes\ragapplication>python src/rag_pipeline_improved.py
