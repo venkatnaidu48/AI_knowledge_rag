@@ -27,7 +27,8 @@ class Settings(BaseSettings):
     API_LOG_LEVEL: str = "info"
     
     # ============ Database Settings ============
-    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/rag_db"
+    DATABASE_URL: str = f"sqlite:///{os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'rag_dev.db')}"
+    # PostgreSQL alternative: "postgresql://postgres:password@localhost:5432/rag_db"
     DATABASE_POOL_SIZE: int = 20
     DATABASE_MAX_OVERFLOW: int = 40
     DATABASE_POOL_TIMEOUT: int = 30

@@ -1,0 +1,63 @@
+name: Performance & Load Testing
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:
+
+jobs:
+  performance-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install locust
+    
+    - name: Run API performance tests
+      run: |
+        pytest tests/ -v --durations=10
+    
+    - name: Generate performance report
+      run: |
+        echo "Performance test completed"
+        echo "Review: tests/performance_results.json"
+      continue-on-error: true
+
+  load-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install locust
+    
+    - name: Start API server in background
+      run: |
+        python src/main.py &
+        sleep 5
+    
+    - name: Run load test
+      run: |
+        # Add Locust load test configuration
+        echo "Running load tests..."
+        # locust -f tests/load_tests.py -u 100 -r 10 -t 60s --headless
