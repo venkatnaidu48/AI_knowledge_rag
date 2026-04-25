@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
     
     # LLM Parameters
-    LLM_TEMPERATURE: float = 0.7
+    LLM_TEMPERATURE: float = 0.1
     LLM_MAX_TOKENS: int = 1000
     LLM_TOP_P: float = 0.95
     

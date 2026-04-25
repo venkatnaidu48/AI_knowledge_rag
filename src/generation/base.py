@@ -26,7 +26,7 @@ class LLMProvider(ABC):
     async def generate(
         self,
         prompt: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 1000,
         **kwargs
     ) -> str:
@@ -124,7 +124,7 @@ class GenerationRequest:
         context_chunks: List[Dict],
         prompt: str,
         provider: Optional[str] = None,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 1000,
         require_grounding: bool = True,
     ):

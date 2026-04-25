@@ -1121,9 +1121,7 @@ Response:
    - Return top-5 similar chunks
    - Include similarity scores
 ```
-
 ---
-
 ## STEP 5: Query Processing Pipeline
 
 ### What is STEP 5?
@@ -1619,7 +1617,7 @@ OpenAI format:
     {"role": "system", "content": "You are helpful..."},
     {"role": "user", "content": "Based on context..."}
   ],
-  "temperature": 0.7,
+  "temperature": 0.1,
   "max_tokens": 1000
 }
 
@@ -1628,14 +1626,14 @@ Mistral/Ollama format:
   "model": "mistral",
   "prompt": "Full prompt text",
   "stream": false,
-  "temperature": 0.7
+  "temperature": 0.1
 }
 
 HuggingFace format:
 {
   "inputs": "Full prompt text",
   "parameters": {
-    "temperature": 0.7,
+    "temperature": 0.1,
     "max_length": 1000
   }
 }
@@ -1656,7 +1654,7 @@ async def generate(request):
         # Try primary provider
         response = await primary_provider.generate(
             prompt=request.prompt,
-            temperature=0.7,
+            temperature=0.1,
             max_tokens=1000
         )
         return response
@@ -1719,7 +1717,7 @@ Request:
   ],
   "prompt": "Based on context, answer: What is...",
   "provider": "mistral",               # Optional
-  "temperature": 0.7,                  # 0.0-1.0
+  "temperature": 0.1,                  # 0.0-1.0
   "max_tokens": 1000,
   "require_grounding": true            # Validate answer
 }
@@ -2651,43 +2649,9 @@ docker-compose exec api pytest tests/
 ```
 
 ---
-
-## Getting Started
-
-### Prerequisites
-
-- **Python 3.13+**
-- **pip** (Python package manager)
-- **Git** (for cloning/version control)
-- **4GB RAM minimum** (for embeddings)
-
-### Quick Start (5 minutes)
-
-#### 1. Clone Repository
-```bash
-cd ragapplication
-```
-
-#### 2. Create Environment
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-#### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-#### 4. Configure Settings
-```bash
-# Copy example config
-cp .env.example .env
+# it is possible to develop and send the 500 concurrent useres, and how it works?
+Yes, it is possible to handle ~500 concurrent users, but not with a single-instance setup; you need a scaled architecture.
+To support 500 users, I would use horizontal scaling, where multiple FastAPI instances (containers) run in parallel behind a load balancer, so incoming requests are distributed across servers instead of hitting one machine. I would replace SQLite with PostgreSQL (better concurrency), keep FAISS either shared or sharded, and use Redis caching to reduce repeated embedding/LLM calls.
 
 # Edit .env with your settings
 # At minimum, add ONE LLM provider:

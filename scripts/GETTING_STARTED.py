@@ -135,7 +135,7 @@ pipeline = RAGPipeline(verbose=True)
 response = pipeline.process_query(
     question="What is our company strategy?",
     retrieval_threshold=0.5,      # STEP 5: Query processing
-    generation_temperature=0.7,    # STEP 6: LLM generation
+    generation_temperature=0.1,    # STEP 6: LLM generation
     use_llm=True                   # Try LLM, fallback to retrieval
 )
 

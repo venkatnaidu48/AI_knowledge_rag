@@ -119,7 +119,7 @@ class LLMGenerator:
         self,
         context: str,
         question: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 300
     ) -> Optional[Tuple[str, float]]:
         """
@@ -128,15 +128,21 @@ class LLMGenerator:
         Returns: (answer, generation_time_ms) or None if failed
         """
         try:
-            prompt = f"""Based on the following company documents, answer the question. 
-Answer only from the documents provided. Do not make up information.
+            prompt = f"""You are an expert assistant that answers ONLY from provided documents. 
+
+CRITICAL RULES:
+1. ONLY answer from the documents below - NO external knowledge
+2. If information is NOT in the documents, say "I don't have this information"
+3. NEVER make up, infer, assume, or hallucinate facts
+4. If unsure, ask for clarification or say you need more information
+5. Always cite the source for your answer
 
 DOCUMENTS:
 {context}
 
 QUESTION: {question}
 
-ANSWER:"""
+ANSWER (from documents only):"""
             
             start_time = time.time()
             
@@ -176,7 +182,7 @@ ANSWER:"""
         self,
         context: str,
         question: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 300
     ) -> Optional[Tuple[str, float]]:
         """Generate answer using OpenAI GPT-4"""
@@ -185,18 +191,25 @@ ANSWER:"""
             openai.api_key = self.providers_config[LLMProvider.OPENAI]["api_key"]
             
             system_prompt = (
-                "You are a helpful assistant that answers questions based on provided documents. "
-                "Answer ONLY from the documents provided. Do not make up information or add knowledge outside the documents."
+                "You are an expert assistant that answers ONLY from provided documents.\n"
+                "CRITICAL RULES:\n"
+                "1. ONLY answer from the documents provided - NO external knowledge\n"
+                "2. If information is NOT in documents, say 'I don't have this information in the provided documents'\n"
+                "3. NEVER make up, infer, assume, or hallucinate facts\n"
+                "4. If unsure, ask for clarification or say you need more information\n"
+                "5. Always cite sources when possible\n"
+                "6. Do NOT add your own interpretations or generalizations\n"
+                "7. Stick strictly to what is written in the documents"
             )
             
-            user_message = f"""Based on the following company documents, answer this question:
+            user_message = f"""Based STRICTLY on the following company documents, answer this question:
 
 DOCUMENTS:
 {context}
 
 QUESTION: {question}
 
-Provide a clear, concise answer based only on the documents above."""
+ANSWER (from documents only - no external knowledge):"""
             
             start_time = time.time()
             
@@ -230,7 +243,7 @@ Provide a clear, concise answer based only on the documents above."""
         self,
         context: str,
         question: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 300
     ) -> Optional[Tuple[str, float]]:
         """Generate answer using Groq (very fast inference)"""
@@ -238,18 +251,22 @@ Provide a clear, concise answer based only on the documents above."""
             api_key = self.providers_config[LLMProvider.GROQ]["api_key"]
             
             system_prompt = (
-                "You are a helpful assistant that answers questions based on provided documents. "
-                "Answer ONLY from the documents provided."
+                "You are an expert assistant that answers ONLY from provided documents.\n"
+                "RULES:\n"
+                "1. ONLY use the documents provided - NO external knowledge\n"
+                "2. If information is NOT in documents, say 'I don't have this information'\n"
+                "3. NEVER make up or hallucinate facts\n"
+                "4. Stick strictly to what is written"
             )
             
-            user_message = f"""Based on these company documents, answer this question:
+            user_message = f"""Based STRICTLY on these company documents, answer this question:
 
 DOCUMENTS:
 {context}
 
 QUESTION: {question}
 
-Answer concisely based only on the documents."""
+ANSWER (from documents only):"""
             
             start_time = time.time()
             
@@ -294,7 +311,7 @@ Answer concisely based only on the documents."""
         self,
         context: str,
         question: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 300
     ) -> Optional[Tuple[str, float]]:
         """Generate answer using HuggingFace Inference API"""
@@ -346,7 +363,7 @@ ANSWER:"""
         self,
         context: str,
         question: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 300
     ) -> Optional[GeneratedAnswer]:
         """

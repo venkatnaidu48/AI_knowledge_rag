@@ -34,7 +34,7 @@ class GenerateRequest(BaseModel):
     context_chunks: List[dict] = Field(..., description="Retrieved context chunks")
     prompt: str = Field(..., min_length=10, description="Formatted prompt for LLM")
     provider: Optional[str] = Field(None, description="LLM provider (mistral/openai/huggingface/groq)")
-    temperature: float = Field(0.7, ge=0.0, le=1.0, description="Sampling temperature")
+    temperature: float = Field(0.1, ge=0.0, le=1.0, description="Sampling temperature")
     max_tokens: int = Field(1000, ge=100, le=4000, description="Max response tokens")
     require_grounding: bool = Field(True, description="Require grounding validation")
     
@@ -45,7 +45,7 @@ class GenerateRequest(BaseModel):
                 "context_chunks": [{"text": "Our strategy focuses on..."}],
                 "prompt": "Based on context...",
                 "provider": "mistral",
-                "temperature": 0.7,
+                "temperature": 0.1,
                 "max_tokens": 1000,
             }
         }
@@ -75,13 +75,33 @@ class GroundingInfo(BaseModel):
     explanation: str
 
 
+class QualityScores(BaseModel):
+    """Quality assessment scores for response."""
+    relevance_score: float = Field(..., description="0-1, how relevant to query")
+    coherence_score: float = Field(..., description="0-1, how clear and logical")
+    length_score: float = Field(..., description="0-1, appropriate length")
+    grounding_score: float = Field(..., description="0-1, grounded in context")
+    confidence_score: float = Field(..., description="0-1, confidence in answer")
+    overall_score: float = Field(..., description="0-1, weighted average")
+
+
+class HallucinationAnalysis(BaseModel):
+    """Hallucination risk assessment."""
+    risk_level: str = Field(..., description="SAFE, LOW, MEDIUM, or HIGH")
+    risk_percentage: float = Field(..., description="0-100, estimated hallucination risk")
+    detected_issues: List[str] = Field(..., description="Specific hallucination concerns")
+    is_safe_to_use: bool = Field(..., description="Recommended for user consumption")
+
+
 class GenerateResponse(BaseModel):
-    """Response from generation endpoint."""
+    """Response from generation endpoint with quality and hallucination assessment."""
     success: bool
     response: str
     provider_used: str
     model_used: str
     grounding: Optional[GroundingInfo] = None
+    quality_scores: Optional[QualityScores] = None
+    hallucination_analysis: Optional[HallucinationAnalysis] = None
     tokens_used: Optional[dict] = None
     latency_ms: float
     query: str
@@ -149,7 +169,7 @@ async def generate(
         "context_chunks": [...],
         "prompt": "Based on context...",
         "provider": "mistral",
-        "temperature": 0.7,
+        "temperature": 0.1,
         "require_grounding": true
       }'
     ```

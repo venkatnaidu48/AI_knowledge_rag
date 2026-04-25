@@ -56,7 +56,7 @@ class MistralProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 1000,
         **kwargs
     ) -> str:
@@ -148,7 +148,7 @@ class OpenAIProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 1000,
         **kwargs
     ) -> str:
@@ -245,7 +245,7 @@ class HuggingFaceProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 1000,
         **kwargs
     ) -> str:
@@ -343,7 +343,7 @@ class GroqProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        temperature: float = 0.7,
+        temperature: float = 0.1,
         max_tokens: int = 1000,
         **kwargs
     ) -> str:
